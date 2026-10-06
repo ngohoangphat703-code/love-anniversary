@@ -171,16 +171,10 @@ function initGallerySystem() {
         return card;
     };
 
-    // Tải ảnh lên - Giới hạn tối đa 100 tấm mỗi lần chọn
+    // Tải nhiều ảnh lên cùng lúc
     document.getElementById('image-upload').addEventListener('change', async (e) => {
         const files = Array.from(e.target.files);
         if (!files || files.length === 0) return;
-
-        if (files.length > 100) {
-            alert("Mỗi lần chọn chỉ được tải tối đa 100 tấm ảnh! Vui lòng chọn lại.");
-            e.target.value = '';
-            return;
-        }
 
         const processFile = (file) => {
             return new Promise((resolve) => {
@@ -223,7 +217,7 @@ function initGallerySystem() {
             render();
             alert(`Đã tải lên thành công ${files.length} ảnh!`);
         } catch (err) {
-            alert("Bộ nhớ lưu trữ trình duyệt đã đầy. Bạn hãy xóa bớt ảnh cũ bớt nhé!");
+            alert("Bộ nhớ lưu trữ trình duyệt đã đầy. Bạn hãy xóa bớt ảnh cũ nhé!");
         }
 
         e.target.value = '';
