@@ -3,12 +3,9 @@
  */
 const LOVE_CONFIG = {
     coupleNames: "Phát ❤️ Nhung",
-    subtitle: '"3 năm nắm tay nhau đi qua giông bão & đón chào những bình yên rực rỡ nhất."',
-    defaultStartDate: (() => {
-        const d = new Date();
-        d.setFullYear(d.getFullYear() - 3);
-        return d.toISOString().slice(0, 10);
-    })(),
+    subtitle: '"Nắm tay nhau đi qua giông bão & đón chào những bình yên rực rỡ nhất."',
+    // Cố định ngày 16/10/2023 theo định dạng YYYY-MM-DD
+    defaultStartDate: "2023-10-16",
     credentials: {
         username: "PhatxNhung",
         password: "PhatxNhung"

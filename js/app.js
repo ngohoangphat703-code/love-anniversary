@@ -171,43 +171,62 @@ function initGallerySystem() {
         return card;
     };
 
-    document.getElementById('image-upload').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+    // Tải ảnh lên - Giới hạn tối đa 100 tấm mỗi lần chọn
+    document.getElementById('image-upload').addEventListener('change', async (e) => {
+        const files = Array.from(e.target.files);
+        if (!files || files.length === 0) return;
 
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const maxDim = 800;
-                let width = img.width, height = img.height;
+        if (files.length > 100) {
+            alert("Mỗi lần chọn chỉ được tải tối đa 100 tấm ảnh! Vui lòng chọn lại.");
+            e.target.value = '';
+            return;
+        }
 
-                if (width > height && width > maxDim) {
-                    height = Math.round((height * maxDim) / width);
-                    width = maxDim;
-                } else if (height > maxDim) {
-                    width = Math.round((width * maxDim) / height);
-                    height = maxDim;
-                }
+        const processFile = (file) => {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const maxDim = 800;
+                        let width = img.width, height = img.height;
 
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
+                        if (width > height && width > maxDim) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                        } else if (height > maxDim) {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                        }
 
-                const base64Str = canvas.toDataURL('image/jpeg', 0.7);
-                try {
-                    galleryImages.push(base64Str);
-                    localStorage.setItem('love_gallery_images', JSON.stringify(galleryImages));
-                    render();
-                } catch (err) {
-                    alert("Bộ nhớ lưu trữ trình duyệt đầy, hãy xóa bớt ảnh cũ nhé!");
-                }
-            };
-            img.src = evt.target.result;
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        const base64Str = canvas.toDataURL('image/jpeg', 0.65);
+                        resolve(base64Str);
+                    };
+                    img.src = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
         };
-        reader.readAsDataURL(file);
+
+        try {
+            for (const file of files) {
+                const base64Str = await processFile(file);
+                galleryImages.push(base64Str);
+            }
+            localStorage.setItem('love_gallery_images', JSON.stringify(galleryImages));
+            render();
+            alert(`Đã tải lên thành công ${files.length} ảnh!`);
+        } catch (err) {
+            alert("Bộ nhớ lưu trữ trình duyệt đã đầy. Bạn hãy xóa bớt ảnh cũ bớt nhé!");
+        }
+
+        e.target.value = '';
     });
 
     render();
