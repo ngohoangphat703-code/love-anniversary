@@ -4,7 +4,6 @@
 const LOVE_CONFIG = {
     coupleNames: "Phát ❤️ Nhung",
     subtitle: '"Nắm tay nhau đi qua giông bão & đón chào những bình yên rực rỡ nhất."',
-    // Cố định ngày 16/10/2023 theo định dạng YYYY-MM-DD
     defaultStartDate: "2023-10-16",
     credentials: {
         username: "PhatxNhung",
@@ -178,7 +177,7 @@ const DEFAULT_NOTES = [
   "Có em, cuộc sống của anh mới thực sự bắt đầu.",
   "Em là người đầu tiên và duy nhất anh nghĩ đến mỗi khi thức dậy.",
   "Tình yêu anh dành cho em đậm sâu hơn cả biển cả.",
-  "Cảm ơn em vì đã lắng nghe và hiểu cho những tâm tư của anh.",
+  "Cảm ơn em đã lắng nghe và hiểu cho những tâm tư của anh.",
   "Em là ly trà ngọt ngào xua tan đi sự đắng ngắt của cuộc đời.",
   "Hãy dựa vào vai anh bất cứ khi nào em cảm thấy mệt mỏi.",
   "Anh muốn cùng em chia sẻ mọi niềm vui lẫn nỗi buồn.",
@@ -224,7 +223,7 @@ const DEFAULT_NOTES = [
   "Anh muốn cùng em nắm tay đi qua muôn vàn thử thách.",
   "Em là mảnh ghép hoàn hảo nhất trong cuộc đời anh.",
   "Tình yêu này anh gìn giữ chỉ dành riêng cho em.",
-  "Cảm ơn em vì đã dịu dàng đến bên anh.",
+  "Cảm ơn em đã dịu dàng đến bên anh.",
   "Em chính là điều tuyệt vời nhất mà anh từng gặp.",
   "Anh muốn cùng em tạo nên những kỷ niệm khó quên.",
   "Có em, cuộc sống anh mới trở nên trọn vẹn.",
@@ -248,7 +247,7 @@ const DEFAULT_NOTES = [
   "Anh nguyện đồng hành cùng em trên mọi chặng đường.",
   "Em là giấc mơ ngọt ngào mà anh luôn trân trọng.",
   "Tình yêu chúng ta đẹp như một bức tranh nghệ thuật.",
-  "Cảm ơn em vì đã luôn ở bên động viên anh.",
+  "Cảm ơn em đã luôn ở bên động viên anh.",
   "Em chính là mảnh ghép dịu dàng nhất của cuộc đời anh.",
   "Anh muốn cùng em tận hưởng trọn vẹn từng khoảnh khắc.",
   "Có em, thế giới của anh mới thực sự tràn ngập màu sắc.",
@@ -272,7 +271,7 @@ const DEFAULT_NOTES = [
   "Anh nguyện cùng em đi qua bao thăng trầm cuộc sống.",
   "Em là lý do khiến anh luôn muốn mỉm cười.",
   "Tình yêu của hai ta sẽ mãi đẹp như thuở ban đầu.",
-  "Cảm ơn em vì đã mang lại bình yên cho anh.",
+  "Cảm ơn em đã mang lại bình yên cho anh.",
   "Em chính là thiên đường nhỏ bé của riêng anh.",
   "Anh muốn dành trọn thanh xuân này để yêu em.",
   "Có em bên cạnh, khó khăn nào cũng chỉ là thử thách.",
@@ -284,7 +283,7 @@ const DEFAULT_NOTES = [
   "Anh muốn ôm em vào lòng và nói lời yêu mỗi ngày.",
   "Em là món quà vô giá mà cuộc sống dành cho anh.",
   "Tình yêu chúng ta sẽ mãi vững bền qua thời gian.",
-  "Cảm ơn em vì đã chấp nhận mọi khuyết điểm của anh.",
+  "Cảm ơn em đã chấp nhận mọi khuyết điểm của anh.",
   "Em chính là mảnh ghép hoàn hảo nhất mà anh tìm kiếm.",
   "Anh nguyện nắm chặt tay em không bao giờ buông.",
   "Có em, mỗi ngày trôi qua đều trọn vẹn tình yêu.",
@@ -296,7 +295,7 @@ const DEFAULT_NOTES = [
   "Anh nguyện chia sẻ mọi niềm vui ngọt ngào cùng em.",
   "Em là câu chuyện đẹp nhất mà anh muốn kể mãi.",
   "Tình yêu anh dành cho em sẽ luôn cháy bổng.",
-  "Cảm ơn em vì đã làm cho cuộc đời anh ý nghĩa hơn.",
+  "Cảm ơn em đã làm cho cuộc đời anh ý nghĩa hơn.",
   "Em chính là mảnh ghép dịu dàng nhất của anh.",
   "Anh muốn cùng em đi qua những tháng ngày êm đềm.",
   "Có em, trái tim anh mới thực sự biết yêu thương.",
@@ -322,6 +321,7 @@ const DEFAULT_NOTES = [
   "Tình yêu anh dành cho em là nguồn sống mỗi ngày.",
   "Cảm ơn em vì đã bước vào và làm sáng bừng thế giới của anh."
 ];
+
 const SPECIAL_LETTER_TEXT = `
     <p>Gửi Nhung yêu dấu, 3 năm trôi qua kể từ ngày Phát và Nhung bắt đầu nắm tay nhau đi qua từng ngõ ngách, trải qua biết bao nhiêu vui buồn. Cảm ơn em đã luôn kiên nhẫn, yêu thương và dịu dàng che chở cho tình yêu này.</p>
     <p>Mong rằng 3 năm, 30 năm hay nhiều năm sau nữa, chúng ta vẫn giữ nguyên vẹn nụ cười ngọt ngào này và cùng nhau hoàn thành mọi ước mơ còn dang dở! 💖</p>

@@ -6,34 +6,48 @@ class LoveCounter {
         this.daysEl = document.getElementById('counter-days');
         this.totalDaysBadge = document.getElementById('total-days-badge');
 
-        this.init();
+        this.initRealtimeSync();
     }
 
-    init() {
-        const savedDate = localStorage.getItem('love_start_date') || LOVE_CONFIG.defaultStartDate;
-        this.inputEl.value = savedDate.slice(0, 10);
+    async initRealtimeSync() {
+        const { doc, getDoc, setDoc, onSnapshot } = window.firebaseModules;
+        const db = window.db;
+        const docRef = doc(db, "love_config", "settings");
 
-        this.updateCounter();
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+            await setDoc(docRef, { startDate: LOVE_CONFIG.defaultStartDate });
+        }
 
-        this.inputEl.addEventListener('change', (e) => {
-            if (e.target.value) {
-                localStorage.setItem('love_start_date', e.target.value);
-                this.updateCounter();
+        // Lắng nghe thay đổi dữ liệu thời gian thực từ Cloud Firebase
+        onSnapshot(docRef, (doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
+                if (data.startDate) {
+                    this.inputEl.value = data.startDate.slice(0, 10);
+                    this.updateCounter(data.startDate);
+                }
             }
         });
 
-        // Cập nhật định kỳ
-        setInterval(() => this.updateCounter(), 60000);
+        this.inputEl.addEventListener('change', async (e) => {
+            const newDate = e.target.value;
+            if (newDate) {
+                await setDoc(docRef, { startDate: newDate }, { merge: true });
+            }
+        });
+
+        setInterval(() => {
+            if (this.inputEl.value) this.updateCounter(this.inputEl.value);
+        }, 60000);
     }
 
-    updateCounter() {
-        const startVal = this.inputEl.value;
+    updateCounter(startVal) {
         if (!startVal) return;
 
         const startDate = new Date(startVal);
         const today = new Date();
 
-        // Chuẩn hóa thời gian về 00:00:00 để tính theo ngày
         startDate.setHours(0, 0, 0, 0);
         today.setHours(0, 0, 0, 0);
 
@@ -45,7 +59,6 @@ class LoveCounter {
             return;
         }
 
-        // Tính Năm, Tháng, Ngày lẻ
         let years = today.getFullYear() - startDate.getFullYear();
         let months = today.getMonth() - startDate.getMonth();
         let days = today.getDate() - startDate.getDate();
@@ -61,7 +74,6 @@ class LoveCounter {
             months += 12;
         }
 
-        // Tính tổng số ngày thực tế
         const totalDiffTime = Math.abs(today - startDate);
         const totalDays = Math.floor(totalDiffTime / (1000 * 60 * 60 * 24));
 

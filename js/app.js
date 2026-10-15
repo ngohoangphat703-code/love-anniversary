@@ -84,9 +84,27 @@ function initHeartsBackground() {
     }
 }
 
-/* DAILY NOTES SYSTEM */
+/* DAILY NOTES SYSTEM (Đồng bộ Cloud Realtime) */
 function initNotesSystem() {
-    let customNotes = JSON.parse(localStorage.getItem('love_custom_notes') || '[]');
+    const { doc, getDoc, setDoc, onSnapshot, updateDoc, arrayUnion } = window.firebaseModules;
+    const db = window.db;
+    const noteRef = doc(db, "love_config", "notes");
+
+    let customNotes = [];
+
+    const setupNotesListener = async () => {
+        const docSnap = await getDoc(noteRef);
+        if (!docSnap.exists()) {
+            await setDoc(noteRef, { customNotes: [] });
+        }
+
+        onSnapshot(noteRef, (docSnap) => {
+            if (docSnap.exists()) {
+                customNotes = docSnap.data().customNotes || [];
+            }
+        });
+    };
+    setupNotesListener();
 
     const getRandomNote = () => {
         const allNotes = [...DEFAULT_NOTES, ...customNotes];
@@ -105,24 +123,31 @@ function initNotesSystem() {
         document.getElementById('custom-note-form').classList.toggle('hidden');
     });
 
-    document.getElementById('save-note-btn').addEventListener('click', () => {
+    document.getElementById('save-note-btn').addEventListener('click', async () => {
         const input = document.getElementById('custom-note-input');
         const val = input.value.trim();
         if (!val) return;
 
-        customNotes.push(val);
-        localStorage.setItem('love_custom_notes', JSON.stringify(customNotes));
+        await updateDoc(noteRef, {
+            customNotes: arrayUnion(val)
+        });
+
         input.value = '';
         document.getElementById('custom-note-form').classList.add('hidden');
         document.getElementById('daily-note-text').innerText = val;
+        alert("Đã lưu thông điệp lên hệ thống chung cho cả hai!");
     });
 
-    getRandomNote();
+    setTimeout(getRandomNote, 1000);
 }
 
-/* GALLERY SYSTEM */
+/* GALLERY SYSTEM (Đồng bộ Cloud Realtime) */
 function initGallerySystem() {
-    let galleryImages = JSON.parse(localStorage.getItem('love_gallery_images') || '[]');
+    const { doc, getDoc, setDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove } = window.firebaseModules;
+    const db = window.db;
+    const galleryRef = doc(db, "love_config", "gallery");
+
+    let galleryImages = [];
 
     const render = () => {
         const container = document.getElementById('gallery-container');
@@ -139,11 +164,11 @@ function initGallerySystem() {
             emptyMsg.classList.add('hidden');
         } else {
             emptyMsg.classList.add('hidden');
-            galleryImages.forEach((src, idx) => container.appendChild(createCard(src, true, idx)));
+            galleryImages.forEach((src) => container.appendChild(createCard(src, true)));
         }
     };
 
-    const createCard = (src, isCustom, idx = null) => {
+    const createCard = (src, isCustom) => {
         const card = document.createElement('div');
         card.className = "group relative aspect-square bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md border border-rosepink-200 transition-all transform hover:-translate-y-1 cursor-pointer";
         card.innerHTML = `
@@ -161,17 +186,33 @@ function initGallerySystem() {
         };
 
         if (isCustom) {
-            card.querySelector('.delete-btn').onclick = (e) => {
+            card.querySelector('.delete-btn').onclick = async (e) => {
                 e.stopPropagation();
-                galleryImages.splice(idx, 1);
-                localStorage.setItem('love_gallery_images', JSON.stringify(galleryImages));
-                render();
+                if (confirm("Bạn có chắc muốn xóa ảnh này không?")) {
+                    await updateDoc(galleryRef, {
+                        images: arrayRemove(src)
+                    });
+                }
             };
         }
         return card;
     };
 
-    // Tải nhiều ảnh lên cùng lúc
+    const initCloudGallery = async () => {
+        const docSnap = await getDoc(galleryRef);
+        if (!docSnap.exists()) {
+            await setDoc(galleryRef, { images: [] });
+        }
+
+        onSnapshot(galleryRef, (docSnap) => {
+            if (docSnap.exists()) {
+                galleryImages = docSnap.data().images || [];
+                render();
+            }
+        });
+    };
+    initCloudGallery();
+
     document.getElementById('image-upload').addEventListener('change', async (e) => {
         const files = Array.from(e.target.files);
         if (!files || files.length === 0) return;
@@ -183,7 +224,7 @@ function initGallerySystem() {
                     const img = new Image();
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        const maxDim = 800;
+                        const maxDim = 600;
                         let width = img.width, height = img.height;
 
                         if (width > height && width > maxDim) {
@@ -199,8 +240,7 @@ function initGallerySystem() {
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        const base64Str = canvas.toDataURL('image/jpeg', 0.65);
-                        resolve(base64Str);
+                        resolve(canvas.toDataURL('image/jpeg', 0.6));
                     };
                     img.src = evt.target.result;
                 };
@@ -211,19 +251,17 @@ function initGallerySystem() {
         try {
             for (const file of files) {
                 const base64Str = await processFile(file);
-                galleryImages.push(base64Str);
+                await updateDoc(galleryRef, {
+                    images: arrayUnion(base64Str)
+                });
             }
-            localStorage.setItem('love_gallery_images', JSON.stringify(galleryImages));
-            render();
-            alert(`Đã tải lên thành công ${files.length} ảnh!`);
+            alert(`Đã tải lên thành công ${files.length} ảnh và đồng bộ cho cả hai!`);
         } catch (err) {
-            alert("Bộ nhớ lưu trữ trình duyệt đã đầy. Bạn hãy xóa bớt ảnh cũ nhé!");
+            alert("Lỗi tải ảnh lên đám mây. Dung lượng ảnh có thể quá lớn.");
         }
 
         e.target.value = '';
     });
-
-    render();
 }
 
 /* CONFETTI TRIGGER */
